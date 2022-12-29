@@ -6,8 +6,6 @@ include:
 
 test:
   stage: test
-  needs:
-    - job: test
   script:
     - docker pull registry.gitlab.iitsp.com/allworldit/docker/postgresql:latest
     - docker pull registry.gitlab.iitsp.com/allworldit/docker/redis:latest
