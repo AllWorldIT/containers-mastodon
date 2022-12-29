@@ -225,6 +225,8 @@ ARG MASTODON_VER=4.0.2
 COPY --from=ruby-builder /build/ruby-root /
 COPY --from=nodejs-builder /build/nodejs-root /
 
+# Copy build patches
+COPY patches build/patches
 
 RUN set -ex; \
 	true "Install requirements"; \
@@ -238,7 +240,7 @@ RUN set -ex; \
 	apk add --no-cache coreutils wget procps libpq imagemagick ffmpeg jemalloc icu-libs libidn yaml file tzdata readline; \
 # Mastodon build reqs
 	apk add --no-cache build-base git jemalloc-dev libucontext-dev libpq-dev icu-dev zlib-dev libidn-dev; \
-	mkdir build; \
+	npm install --global yarn; \
 	true "Versioning..."; \
 	node --version; \
 	ruby --version; \
@@ -246,10 +248,10 @@ RUN set -ex; \
 	cd build; \
 	wget https://github.com/mastodon/mastodon/archive/refs/tags/v${MASTODON_VER}.tar.gz; \
 	tar -zxf v${MASTODON_VER}.tar.gz; \
-	true "Patching Mastodon..."; \
-	true "Build Mastodon..."; \
-	npm install --global yarn; \
 	cd mastodon-${MASTODON_VER}; \
+	true "Patching Mastodon..."; \
+	patch -p1 < ../patches/mastodon-4.0.2_reserved-usernames.patch; \
+	true "Build Mastodon..."; \
 	bundle config set --local deployment 'true'; \
 	bundle config set --local without 'development test'; \
 	bundle config set silence_root_warning true; \

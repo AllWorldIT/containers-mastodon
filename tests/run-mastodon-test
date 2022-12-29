@@ -8,7 +8,7 @@ function check_tests() {
 
         echo "INFO: Waiting for tests to pass... ${i}s"
 
-        for node in mastodon streaming sidekiq; do
+        for node in mastodon mastodon-streaming mastodon-sidekiq; do
             if docker-compose exec "$node" test -e /PASSED; then
                 echo "PASSED:   - Tests passed on node $node"
                 FAILED=
