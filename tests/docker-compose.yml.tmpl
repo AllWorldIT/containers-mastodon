@@ -11,6 +11,8 @@ services:
       - "POSTGRES_DATABASE=mastodon"
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
+    networks:
+      - internal
 
   redis:
     image: registry.gitlab.iitsp.com/allworldit/docker/redis:latest
@@ -32,6 +34,7 @@ services:
       - ./data/mastodon:/mastodon/public/system
       - ./data/mastodon.private:/mastodon/private
     networks:
+      - external
       - internal
     depends_on:
       - postgresql
@@ -46,6 +49,7 @@ services:
       - ./mastodon.env:/etc/mastodon/mastodon.env
       - ./data/mastodon:/mastodon/public/system
     networks:
+      - external
       - internal
     depends_on:
       - postgresql
@@ -59,6 +63,7 @@ services:
     volumes:
       - ./mastodon.env:/etc/mastodon/mastodon.env
     networks:
+      - external
       - internal
     depends_on:
       - postgresql
@@ -66,7 +71,10 @@ services:
 
 
 networks:
+  external:
+    driver: bridge
   internal:
     driver: bridge
+    internal: true
 
 # vim: filetype=yaml tabstop=2 shiftwidth=2 expandtab

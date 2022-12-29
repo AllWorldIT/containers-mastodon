@@ -21,5 +21,7 @@ if [ "$i" = 0 ]; then
 	exit 1
 fi
 
+touch /PASSED
+
 # We'll wait 60s more, as we're shut down by the run-mastodon-test script
 sleep 60

@@ -8,7 +8,7 @@ function check_tests() {
 
         echo "INFO: Waiting for tests to pass... ${i}s"
 
-        for node in web streaming sidekiq; do
+        for node in mastodon streaming sidekiq; do
             if docker-compose exec "$node" test -e /PASSED; then
                 echo "PASSED:   - Tests passed on node $node"
                 FAILED=
@@ -37,7 +37,7 @@ function check_tests() {
 mkdir -p data/postgresql data/mastodon data/redis
 
 # Copy configuration file
-cp mastodon.env.tmp mastodon.env
+cp mastodon.env.tmpl mastodon.env
 
 VAPID_PRIVATE_KEY_RAW=$(openssl ecparam -name prime256v1 -genkey -noout -out /dev/stdout)
 VAPID_PUBLIC_KEY_RAW=$(echo "$VAPID_PRIVATE_KEY_RAW" | openssl ec -in /dev/stdin -pubout -out /dev/stdout)
@@ -49,13 +49,17 @@ echo "VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY" >> mastodon.env
 echo "VAPID_PUBLIC_KEY=$VAPID_PUBLIC_KEY" >> mastodon.env
 
 
+echo "========== START mastodon.env ==========="
+cat mastodon.env
+echo "========== END mastodon.env ==========="
+
 
 echo "NOTICE: Starting nodes for round 1"
 docker-compose up --remove-orphans &
 
 # Check if our tests passed
 if check_tests; then
-    TESTS_PASSED=yes
+	TESTS_PASSED=yes
 fi
 
 echo "NOTICE: Shutting down nodes for round 1"
@@ -76,7 +80,7 @@ docker-compose up --remove-orphans &
 
 # Check if our tests passed
 if check_tests; then
-    TESTS_PASSED=yes
+	TESTS_PASSED=yes
 fi
 
 echo "NOTICE: Shutting down nodes for round 2"
@@ -100,7 +104,7 @@ docker-compose up --remove-orphans &
 
 # Check if our tests passed
 if check_tests; then
-    TESTS_PASSED=yes
+	TESTS_PASSED=yes
 fi
 
 echo "NOTICE: Shutting down nodes for round 3"
