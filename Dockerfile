@@ -5,7 +5,7 @@
 #
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine:latest as ruby-builder
+FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as ruby-builder
 
 ARG RUBY_VER=3.0.4
 
@@ -106,7 +106,7 @@ RUN set -ex; \
 # Nodejs builder
 #
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine:latest as nodejs-builder
+FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as nodejs-builder
 
 ARG NODEJS_VER=16.18.1
 
@@ -212,7 +212,7 @@ RUN set -ex; \
 #
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine:latest as mastodon-builder
+FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as mastodon-builder
 
 
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
@@ -268,7 +268,7 @@ RUN set -ex; \
 
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine:latest as tools
+FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as tools
 
 RUN set -ex; \
 	true "Install tools"; \
@@ -278,7 +278,7 @@ RUN set -ex; \
 
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine:latest
+FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest
 
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
