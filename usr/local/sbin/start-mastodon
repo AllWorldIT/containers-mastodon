@@ -1,0 +1,21 @@
+#!/bin/sh
+
+cd /opt/mastodon
+
+# Load Mastodon configuration
+set -a
+. mastodon.env
+set +a
+
+# Load our MASTODON_MODE env
+. .mode.env
+
+if [ "$MASTODON_MODE" = "web" ]; then
+	exec bundle exec rails server -p 3000
+
+elif [ "$MASTODON_MODE" = "streaming" ]; then
+	exec node ./streaming
+
+elif [ "$MASTODON_MODE" = "sidekiq" ]; then
+	exec bundle exec sidekiq
+fi

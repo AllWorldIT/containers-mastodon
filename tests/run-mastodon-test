@@ -1,0 +1,116 @@
+#!/bin/sh
+
+
+function check_tests() {
+    i=120
+    while [ "$i" -gt 0 ]; do
+        i=$((i-1))
+
+        echo "INFO: Waiting for tests to pass... ${i}s"
+
+        for node in web streaming sidekiq; do
+            if docker-compose exec "$node" test -e /PASSED; then
+                echo "PASSED:   - Tests passed on node $node"
+                FAILED=
+            else
+                FAILED=yes
+            fi
+        done
+
+        if [ -z "$FAILED" ]; then
+            echo "PASSED:   - PASSED ALL NODES"
+            break
+        fi
+
+        sleep 1
+    done
+
+    if [ "$i" = 0 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+
+
+mkdir -p data/postgresql data/mastodon data/redis
+
+# Copy configuration file
+cp mastodon.env.tmp mastodon.env
+
+VAPID_PRIVATE_KEY_RAW=$(openssl ecparam -name prime256v1 -genkey -noout -out /dev/stdout)
+VAPID_PUBLIC_KEY_RAW=$(echo "$VAPID_PRIVATE_KEY_RAW" | openssl ec -in /dev/stdin -pubout -out /dev/stdout)
+
+VAPID_PRIVATE_KEY=$(echo "$VAPID_PRIVATE_KEY_RAW" | grep -v "PRIVATE" | tr -d '\n')
+VAPID_PUBLIC_KEY=$(echo "$VAPID_PUBLIC_KEY_RAW" | grep -v "PUBLIC" | tr -d '\n')
+
+echo "VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY" >> mastodon.env
+echo "VAPID_PUBLIC_KEY=$VAPID_PUBLIC_KEY" >> mastodon.env
+
+
+
+echo "NOTICE: Starting nodes for round 1"
+docker-compose up --remove-orphans &
+
+# Check if our tests passed
+if check_tests; then
+    TESTS_PASSED=yes
+fi
+
+echo "NOTICE: Shutting down nodes for round 1"
+docker-compose down --remove-orphans --volumes
+
+if [ -z "$TESTS_PASSED" ]; then
+	echo "ERROR: Test failed for round 1!"
+	exit 1
+fi
+
+echo "NOTICE: ALL TESTS PASSED FOR ROUND 1!"
+
+
+
+
+echo "NOTICE: Starting nodes for round 2"
+docker-compose up --remove-orphans &
+
+# Check if our tests passed
+if check_tests; then
+    TESTS_PASSED=yes
+fi
+
+echo "NOTICE: Shutting down nodes for round 2"
+docker-compose down --remove-orphans --volumes
+
+if [ -z "$TESTS_PASSED" ]; then
+	echo "ERROR: Test failed for round 2!"
+	exit 1
+fi
+
+echo "NOTICE: ALL TESTS PASSED FOR ROUND 2!"
+
+
+
+# Now we're going to trigger an upgrade
+> data/mastodon.private/VERSION
+
+
+echo "NOTICE: Starting nodes for round 3"
+docker-compose up --remove-orphans &
+
+# Check if our tests passed
+if check_tests; then
+    TESTS_PASSED=yes
+fi
+
+echo "NOTICE: Shutting down nodes for round 3"
+docker-compose down --remove-orphans --volumes
+
+if [ -z "$TESTS_PASSED" ]; then
+	echo "ERROR: Test failed for round 3!"
+	exit 1
+fi
+
+echo "NOTICE: ALL TESTS PASSED FOR ROUND 3!"
+
+

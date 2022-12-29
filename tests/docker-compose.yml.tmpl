@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+
+  postgresql:
+    image: registry.gitlab.iitsp.com/allworldit/docker/postgresql:latest
+    environment:
+      - "POSTGRES_ROOT_PASSWORD=rootpass"
+      - "POSTGRES_USER=mastodonuser"
+      - "POSTGRES_PASSWORD=mastodonpass"
+      - "POSTGRES_DATABASE=mastodon"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+
+  redis:
+    image: registry.gitlab.iitsp.com/allworldit/docker/redis:latest
+    restart: always
+    environment:
+      - "REDIS_PASSWORD=mastodontest"
+    volumes:
+      - ./data/redis:/var/lib/redis
+    networks:
+      - internal
+
+  mastodon:
+    image: @@CI_IMAGE@@
+    environment:
+      - "CI=true"
+      - "MASTODON_MODE=web"
+    volumes:
+      - ./mastodon.env:/etc/mastodon/mastodon.env
+      - ./data/mastodon:/mastodon/public/system
+      - ./data/mastodon.private:/mastodon/private
+    networks:
+      - internal
+    depends_on:
+      - postgresql
+      - redis
+
+  mastodon-streaming:
+    image: @@CI_IMAGE@@
+    environment:
+      - "CI=true"
+      - "MASTODON_MODE=streaming"
+    volumes:
+      - ./mastodon.env:/etc/mastodon/mastodon.env
+      - ./data/mastodon:/mastodon/public/system
+    networks:
+      - internal
+    depends_on:
+      - postgresql
+      - redis
+
+  mastodon-sidekiq:
+    image: @@CI_IMAGE@@
+    environment:
+      - "CI=true"
+      - "MASTODON_MODE=sidekiq"
+    volumes:
+      - ./mastodon.env:/etc/mastodon/mastodon.env
+    networks:
+      - internal
+    depends_on:
+      - postgresql
+      - redis
+
+
+networks:
+  internal:
+    driver: bridge
+
+# vim: filetype=yaml tabstop=2 shiftwidth=2 expandtab

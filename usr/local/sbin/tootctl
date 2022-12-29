@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cd /opt/mastodon
+
+# Load Mastodon configuration
+set -a
+. mastodon.env
+set +a
+
+set -e
+
+sudo -E -u mastodon -- bin/tootctl "$@"
