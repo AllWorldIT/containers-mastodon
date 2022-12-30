@@ -47,6 +47,19 @@ The mastodon processes run as the mastodon user, in order to drop into the masto
 su -s /bin/sh - mastodon
 ```
 
+# Generating keys
+
+The private and public key can be generated using...
+
+```bash
+VAPID_PRIVATE_KEY_RAW=$(openssl ecparam -name prime256v1 -genkey -noout -out /dev/stdout)
+VAPID_PUBLIC_KEY_RAW=$(echo "$VAPID_PRIVATE_KEY_RAW" | openssl ec -in /dev/stdin -pubout -out /dev/stdout)
+VAPID_PRIVATE_KEY=$(echo "$VAPID_PRIVATE_KEY_RAW" | grep -v "PRIVATE" | tr -d '\n')
+VAPID_PUBLIC_KEY=$(echo "$VAPID_PUBLIC_KEY_RAW" | grep -v "PUBLIC" | tr -d '\n')
+echo "VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY"
+echo "VAPID_PUBLIC_KEY=$VAPID_PUBLIC_KEY"
+```
+
 # Migrating to this image
 
 You MUST create `data/mastodon.private` and touch `data/mastodon.private/VERSION` or startup will fail.
@@ -55,4 +68,5 @@ You MUST create `data/mastodon.private` and touch `data/mastodon.private/VERSION
 # Upgrading
 
 Post deployment migrations must be run after upgrading, as per 4.0.2 release notes.
+
 
