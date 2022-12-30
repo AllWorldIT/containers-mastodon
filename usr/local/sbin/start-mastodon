@@ -11,7 +11,7 @@ set +a
 . .mode.env
 
 if [ "$MASTODON_MODE" = "web" ]; then
-	exec bundle exec rails server -p 3000
+	exec bundle exec rails server -p 3000 -b "$BIND"
 
 elif [ "$MASTODON_MODE" = "streaming" ]; then
 	exec node ./streaming
