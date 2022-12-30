@@ -47,6 +47,10 @@ The mastodon processes run as the mastodon user, in order to drop into the masto
 su -s /bin/sh - mastodon
 ```
 
+# Migrating to this image
+
+You MUST create `data/mastodon.private` and touch `data/mastodon.private/VERSION` or startup will fail.
+
 
 # Upgrading
 

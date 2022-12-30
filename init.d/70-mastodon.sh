@@ -233,7 +233,7 @@ else
 			echo "NOTICE: Upgrade needed from $MASTODON_VER_CUR to $MASTODON_VER"
 			SKIP_POST_DEPLOYMENT_MIGRATIONS=true mastodon-rails db:migrate
 			echo "NOTICE: Upgrade (pre-deployment) complete"
-			echo "$MASTODON_VER" > /opt/mastodon/private/VERSION
+			echo "MASTODON_VER=$MASTODON_VER" > /opt/mastodon/private/VERSION
 		fi
 	fi
 
