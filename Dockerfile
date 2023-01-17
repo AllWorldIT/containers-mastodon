@@ -1,3 +1,22 @@
+# Copyright (c) 2022-2023, AllWorldIT.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
 
 
 #
@@ -5,7 +24,7 @@
 #
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as ruby-builder
+FROM registry.conarx.tech/containers/alpine/3.17 as ruby-builder
 
 ARG RUBY_VER=3.0.4
 
@@ -76,7 +95,7 @@ RUN set -ex; \
 		--with-jemalloc \
 		--disable-install-doc; \
 # Build
-	make VERBOSE=1 -j$(nproc); \
+	make -j$(nproc) -l 8 VERBOSE=1; \
 # Test
 	make test; \
 # Install
@@ -106,7 +125,7 @@ RUN set -ex; \
 # Nodejs builder
 #
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as nodejs-builder
+FROM registry.conarx.tech/containers/alpine/3.17 as nodejs-builder
 
 ARG NODEJS_VER=16.18.1
 
@@ -177,8 +196,8 @@ RUN set -ex; \
 		--with-icu-default-data-dir=$(icu-config --icudatadir) \
 		--with-intl=system-icu; \
 	\
-# Build
-	make VERBOSE=1 BUILDTYPE=Release; \
+# Build, must build without -j or it will fail
+	make -l 8 VERBOSE=1 BUILDTYPE=Release; \
 # Test
 	./node -e 'console.log("Hello, world!")'; \
 	./node -e "require('assert').equal(process.versions.node, '$NODEJS_VER')"; \
@@ -212,7 +231,7 @@ RUN set -ex; \
 #
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as mastodon-builder
+FROM registry.conarx.tech/containers/alpine/3.17 as mastodon-builder
 
 
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
@@ -270,7 +289,7 @@ RUN set -ex; \
 
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest as tools
+FROM registry.conarx.tech/containers/alpine/3.17 as tools
 
 RUN set -ex; \
 	true "Install tools"; \
@@ -280,10 +299,13 @@ RUN set -ex; \
 
 
 
-FROM registry.gitlab.iitsp.com/allworldit/docker/alpine/v3.17:latest
+FROM registry.conarx.tech/containers/alpine/3.17
 
-LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
+
 ARG VERSION_INFO=
+LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
+LABEL org.opencontainers.image.version   = "3.17"
+LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:3.17"
 
 
 RUN set -ex; \
@@ -309,7 +331,7 @@ ENV PATH="${PATH}:/opt/mastodon/bin"
 RUN set -ex; \
 	true "Install requirements"; \
 # Base requirements
-	apk add --no-cache ca-certificates openssl1.1-compat c-ares sudo; \
+	apk add --no-cache ca-certificates curl openssl1.1-compat c-ares sudo; \
 # Ruby
 	apk add --no-cache libucontext; \
 # NodeJS
@@ -322,8 +344,6 @@ RUN set -ex; \
 	ln -s /opt/mastodon /mastodon; \
 	mkdir /etc/mastodon; \
 # Other
-	true "Versioning"; \
-	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
 	true "Cleanup"; \
 	rm -rf \
 		/usr/include/*; \
@@ -332,24 +352,22 @@ RUN set -ex; \
 
 ## Mastodon
 COPY etc/supervisor/conf.d/mastodon.conf /etc/supervisor/conf.d/mastodon.conf
-COPY healthcheck.d/70-mastodon.sh /docker-healthcheck.d/70-mastodon.sh
 COPY usr/local/sbin/start-mastodon /usr/local/sbin/start-mastodon
 COPY usr/local/sbin/tootctl /usr/local/sbin/tootctl
 COPY usr/local/sbin/mastodon-rails /usr/local/sbin/mastodon-rails
-COPY init.d/70-mastodon.sh /docker-entrypoint-init.d/70-mastodon.sh
-COPY pre-init-tests.d/70-mastodon.sh /docker-entrypoint-pre-init-tests.d/70-mastodon.sh
-COPY tests.d/70-mastodon.sh /docker-entrypoint-tests.d/70-mastodon.sh
+COPY usr/local/share/flexible-docker-containers/init.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/init.d
+COPY usr/local/share/flexible-docker-containers/tests.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/tests.d
+COPY usr/local/share/flexible-docker-containers/healthcheck.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/healthcheck.d
 RUN set -ex; \
+	true "Flexible Docker Containers"; \
+	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
+	true "Permissions"; \
 	chown root:root \
 		/etc/supervisor/conf.d/mastodon.conf \
 		/etc/mastodon \
-		/docker-healthcheck.d/70-mastodon.sh \
 		/usr/local/sbin/start-mastodon \
 		/usr/local/sbin/tootctl \
-		/usr/local/sbin/mastodon-rails \
-		/docker-entrypoint-init.d/70-mastodon.sh \
-		/docker-entrypoint-pre-init-tests.d/70-mastodon.sh \
-		/docker-entrypoint-tests.d/70-mastodon.sh; \
+		/usr/local/sbin/mastodon-rails; \
 	chown mastodon:mastodon \
 		/opt/mastodon/private \
 		/opt/mastodon/public \
@@ -357,18 +375,15 @@ RUN set -ex; \
 	chmod 0644 \
 		/etc/supervisor/conf.d/mastodon.conf; \
 	chmod 0755 \
-		/docker-healthcheck.d/70-mastodon.sh \
 		/usr/local/sbin/start-mastodon \
 		/usr/local/sbin/tootctl \
-		/usr/local/sbin/mastodon-rails \
-		/docker-entrypoint-init.d/70-mastodon.sh \
-		/docker-entrypoint-pre-init-tests.d/70-mastodon.sh \
-		/docker-entrypoint-tests.d/70-mastodon.sh; \
+		/usr/local/sbin/mastodon-rails; \
 	chmod 0750 \
 		/etc/mastodon \
 		/opt/mastodon/private \
 		/opt/mastodon/public \
-		/opt/mastodon/public/system
+		/opt/mastodon/public/system; \
+	fdc set-perms
 
 
 VOLUME ["/mastodon/private", "/mastodon/public/system"]

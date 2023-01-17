@@ -1,12 +1,34 @@
-#!/bin/sh
+#!/bin/bash
+# Copyright (c) 2022-2023, AllWorldIT.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
 
 cd /opt/mastodon
+
+echo "NOTICE: Initializing Mastodon settings"
 
 # Make sure we have an environment variable configuration file for Mastodon
 if [ ! -f /etc/mastodon/mastodon.env ]; then
 	echo "ERROR: Mastodon environment variable configuration file '/etc/mastodon/mastodon.env' does not exist"
 	echo "       This can be specified using:  --volume /home/user/test/mastodon.env:/etc/mastodon/mastodon.env"
-	exit 1
+	false
 fi
 # Setup environment variables
 cat <<EOF > /opt/mastodon/mastodon.env
@@ -27,12 +49,12 @@ chmod 0640 /opt/mastodon/mastodon.env
 if [ -z "$MASTODON_MODE" ]; then
 	echo "ERROR: Value for MASTODON_MODE is not set, it should be set to one of these values 'web', 'streaming', 'sidekiq'"
 	echo "       This can be specified using:  -e MASTODON_MODE=web"
-	exit 1
+	false
 fi
 
 if [ "$MASTODON_MODE" != "web" -a "$MASTODON_MODE" != "streaming" -a "$MASTODON_MODE" != "sidekiq" ]; then
 	echo "ERROR: Value for MASTODON_MODE is invalid, supported values are 'web', 'streaming', 'sidekiq'"
-	exit 1
+	false
 fi
 
 # Write out our .mode.env so we can load it from our init and health tests later
@@ -137,14 +159,8 @@ set +a
 
 # All containers need to wait for the main container to come up
 # This signifies completion of any tasks or upgrades that need tobe done
-if [ "$MASTODON_MODE" != "web" ]; then
+if [ "$MASTODON_MODE" = "web" ]; then
 
-	while ! nc -z "$MASTODON_HOST" 3000; do
-		echo "INFO: Waiting for Mastodon on host '$MASTODON_HOST' to start..."
-		sleep 2
-	done
-
-else
 
 	if [ -n "$REDIS_HOST" -o -n "$REDIS_URL" ]; then
 		# Check Redis is up
@@ -170,7 +186,7 @@ else
 			if "${REDIS_CHECK[@]}" | grep -q PONG; then
 				break
 			fi
-			echo "INFO: Waiting for Redis..."
+			echo "INFO: Mastodon waiting for Redis to start up..."
 			sleep 2
 		done
 	fi
@@ -203,25 +219,14 @@ else
 
 	# Check if we need to initialize the database
 	if [ ! -f /opt/mastodon/private/VERSION ]; then
+		# Initialize database
+		echo "NOTICE: Initializing Mastodon database..."
+		mastodon-rails db:schema:load
+		mastodon-rails db:seed
+		echo "NOTICE: Mastodon database initialization complete"
 
-		if [ "$MASTODON_MODE" = "web" ]; then
-			# Initialize database
-			echo "NOTICE: Initializing database..."
-			mastodon-rails db:schema:load
-			mastodon-rails db:seed
-			echo "NOTICE: Database initialization complete"
-
-			# Copy mastodon version into our private state storage
-			cp /opt/mastodon/VERSION /opt/mastodon/private/VERSION
-
-		else
-
-			# When this file starts to exist, it means the database has been initialized
-			while [ ! -f /opt/mastodon/private/VERSION ]; do
-				echo "NOTICE: Waiting for database to be setup"
-				sleep 2
-			done
-		fi
+		# Copy mastodon version into our private state storage
+		cp /opt/mastodon/VERSION /opt/mastodon/private/VERSION
 
 	# If not a new installation, check if we need an upgrade
 	else
@@ -230,11 +235,18 @@ else
 		. /opt/mastodon/VERSION
 		# If it doesn't match, this is an upgrade
 		if [ "$MASTODON_VER_CUR" != "$MASTODON_VER" ]; then
-			echo "NOTICE: Upgrade needed from $MASTODON_VER_CUR to $MASTODON_VER"
+			echo "NOTICE: Mastodon upgrade needed from $MASTODON_VER_CUR to $MASTODON_VER"
 			SKIP_POST_DEPLOYMENT_MIGRATIONS=true mastodon-rails db:migrate
-			echo "NOTICE: Upgrade (pre-deployment) complete"
+			echo "NOTICE: Mastodon upgrade (pre-deployment) complete"
 			echo "MASTODON_VER=$MASTODON_VER" > /opt/mastodon/private/VERSION
 		fi
 	fi
+
+else
+
+	while ! nc -z "$MASTODON_HOST" 3000; do
+		echo "INFO: Waiting for Mastodon on host '$MASTODON_HOST' to start..."
+		sleep 2
+	done
 
 fi

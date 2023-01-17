@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   postgresql:
-    image: registry.gitlab.iitsp.com/allworldit/docker/postgresql:latest
+    image: registry.conarx.tech/containers/postgresql
     environment:
       - "POSTGRES_ROOT_PASSWORD=rootpass"
       - "POSTGRES_USER=mastodonuser"
@@ -15,7 +15,7 @@ services:
       - internal
 
   redis:
-    image: registry.gitlab.iitsp.com/allworldit/docker/redis:latest
+    image: registry.conarx.tech/containers/redis
     restart: always
     environment:
       - "REDIS_PASSWORD=mastodontest"
@@ -25,9 +25,9 @@ services:
       - internal
 
   mastodon:
-    image: @@CI_IMAGE@@
+    image: @@PIPELINE_IMAGE@@
     environment:
-      - "CI=true"
+      - "FDC_CI=true"
       - "MASTODON_MODE=web"
     volumes:
       - ./mastodon.env:/etc/mastodon/mastodon.env
@@ -41,9 +41,9 @@ services:
       - redis
 
   mastodon-streaming:
-    image: @@CI_IMAGE@@
+    image: @@PIPELINE_IMAGE@@
     environment:
-      - "CI=true"
+      - "FDC_CI=true"
       - "MASTODON_MODE=streaming"
     volumes:
       - ./mastodon.env:/etc/mastodon/mastodon.env
@@ -56,9 +56,9 @@ services:
       - redis
 
   mastodon-sidekiq:
-    image: @@CI_IMAGE@@
+    image: @@PIPELINE_IMAGE@@
     environment:
-      - "CI=true"
+      - "FDC_CI=true"
       - "MASTODON_MODE=sidekiq"
     volumes:
       - ./mastodon.env:/etc/mastodon/mastodon.env

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright (c) 2022-2023, AllWorldIT.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,18 +20,27 @@
 # IN THE SOFTWARE.
 
 
-if [ "$MASTODON_MODE" != "web" ]; then
-    echo "ERROR: This command should be run on the 'web' instance"
-    exit 1
+echo "TEST START (mastodon): Using health check to test Mastodon is up"
+i=120
+while [ "$i" -gt 0 ]; do
+	i=$((i-1))
+
+	echo "TEST PROGRESS (mastodon): Waiting for Mastodon health check to pass... ${i}s"
+
+	if source /usr/local/share/flexible-docker-containers/healthcheck.d/42-mastodon.sh; then
+		echo "TEST PASSED (mastodon): Mastodon health check passed on for mode '$MASTODON_MODE'"
+		break
+	fi
+
+	sleep 1
+done
+
+if [ "$i" = 0 ]; then
+	echo "TEST FAILED (mastodon): Mastodon health check failed!"
+	false
 fi
 
-cd /opt/mastodon
+touch /PASSED
 
-# Load Mastodon configuration
-set -a
-. mastodon.env
-set +a
-
-set -e
-
-sudo -E -u mastodon -- bin/tootctl "$@"
+# We'll wait 60s more, as we're shut down by the run-mastodon-test script
+sleep 60
