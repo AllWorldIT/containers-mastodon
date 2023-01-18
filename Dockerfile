@@ -24,7 +24,7 @@
 #
 
 
-FROM registry.conarx.tech/containers/alpine/3.17 as ruby-builder
+FROM registry.conarx.tech/containers/alpine/edge as ruby-builder
 
 ARG RUBY_VER=3.0.4
 
@@ -125,7 +125,7 @@ RUN set -ex; \
 # Nodejs builder
 #
 
-FROM registry.conarx.tech/containers/alpine/3.17 as nodejs-builder
+FROM registry.conarx.tech/containers/alpine/edge as nodejs-builder
 
 ARG NODEJS_VER=16.18.1
 
@@ -231,7 +231,7 @@ RUN set -ex; \
 #
 
 
-FROM registry.conarx.tech/containers/alpine/3.17 as mastodon-builder
+FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 
 
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
@@ -289,7 +289,7 @@ RUN set -ex; \
 
 
 
-FROM registry.conarx.tech/containers/alpine/3.17 as tools
+FROM registry.conarx.tech/containers/alpine/edge as tools
 
 RUN set -ex; \
 	true "Install tools"; \
@@ -299,13 +299,13 @@ RUN set -ex; \
 
 
 
-FROM registry.conarx.tech/containers/alpine/3.17
+FROM registry.conarx.tech/containers/alpine/edge
 
 
 ARG VERSION_INFO=
 LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   = "3.17"
-LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:3.17"
+LABEL org.opencontainers.image.version   = "edge"
+LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:edge"
 
 
 RUN set -ex; \
