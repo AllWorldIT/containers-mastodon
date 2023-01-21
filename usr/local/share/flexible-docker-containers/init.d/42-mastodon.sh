@@ -20,14 +20,15 @@
 # IN THE SOFTWARE.
 
 
+# shellcheck disable=SC2164
 cd /opt/mastodon
 
-echo "NOTICE: Initializing Mastodon settings"
+fdc_notice "Initializing Mastodon settings"
 
 # Make sure we have an environment variable configuration file for Mastodon
 if [ ! -f /etc/mastodon/mastodon.env ]; then
-	echo "ERROR: Mastodon environment variable configuration file '/etc/mastodon/mastodon.env' does not exist"
-	echo "       This can be specified using:  --volume /home/user/test/mastodon.env:/etc/mastodon/mastodon.env"
+	fdc_error "Mastodon environment variable configuration file '/etc/mastodon/mastodon.env' does not exist"
+	fdc_error "This can be specified using:  --volume /home/user/test/mastodon.env:/etc/mastodon/mastodon.env"
 	false
 fi
 # Setup environment variables
@@ -47,13 +48,13 @@ chmod 0640 /opt/mastodon/mastodon.env
 
 # First we're going to check what mode we're running in...
 if [ -z "$MASTODON_MODE" ]; then
-	echo "ERROR: Value for MASTODON_MODE is not set, it should be set to one of these values 'web', 'streaming', 'sidekiq'"
-	echo "       This can be specified using:  -e MASTODON_MODE=web"
+	fdc_error "Value for MASTODON_MODE is not set, it should be set to one of these values 'web', 'streaming', 'sidekiq'"
+	fdc_error "This can be specified using:  -e MASTODON_MODE=web"
 	false
 fi
 
-if [ "$MASTODON_MODE" != "web" -a "$MASTODON_MODE" != "streaming" -a "$MASTODON_MODE" != "sidekiq" ]; then
-	echo "ERROR: Value for MASTODON_MODE is invalid, supported values are 'web', 'streaming', 'sidekiq'"
+if [ "$MASTODON_MODE" != "web" ] && [ "$MASTODON_MODE" != "streaming" ] && [ "$MASTODON_MODE" != "sidekiq" ]; then
+	fdc_error "Value for MASTODON_MODE is invalid, supported values are 'web', 'streaming', 'sidekiq'"
 	false
 fi
 
@@ -66,61 +67,61 @@ echo "MASTODON_MODE=$MASTODON_MODE" > /opt/mastodon/.mode.env
 	. /mastodon/mastodon.env
 
 	if [ -z "$MASTODON_HOST" ]; then
-		echo "ERROR: Environment variable 'MASTODON_HOST' (internal) must be set, this is the hostname of the main mastodon container"
+		fdc_error "Environment variable 'MASTODON_HOST' (internal) must be set, this is the hostname of the main mastodon container"
 		false
 	fi
 
 	if [ -z "$LOCAL_DOMAIN" ]; then
-		echo "ERROR: Environment variable 'LOCAL_DOMAIN' must be set"
+		fdc_error "Environment variable 'LOCAL_DOMAIN' must be set"
 		false
 	fi
 
 	if [ -z "$DB_HOST" ]; then
-		echo "ERROR: Environment variable 'DB_HOST' must be set"
+		fdc_error "Environment variable 'DB_HOST' must be set"
 		false
 	fi
 	if [ -z "$DB_PORT" ]; then
-		echo "ERROR: Environment variable 'DB_PORT' must be set"
+		fdc_error "Environment variable 'DB_PORT' must be set"
 		false
 	fi
 	if [ -z "$DB_USER" ]; then
-		echo "ERROR: Environment variable 'DB_USER' must be set"
+		fdc_error "Environment variable 'DB_USER' must be set"
 		false
 	fi
 	if [ -z "$DB_PASS" ]; then
-		echo "ERROR: Environment variable 'DB_PASS' must be set"
+		fdc_error "Environment variable 'DB_PASS' must be set"
 		false
 	fi
 	if [ -z "$DB_NAME" ]; then
-		echo "ERROR: Environment variable 'DB_NAME' must be set"
+		fdc_error "Environment variable 'DB_NAME' must be set"
 		false
 	fi
 
 	if [ -z "$REDIS_HOST" ]; then
-		echo "ERROR: Environment variable 'REDIS_HOST' must be set"
+		fdc_error "Environment variable 'REDIS_HOST' must be set"
 		false
 	fi
 	if [ -z "$REDIS_PORT" ]; then
-		echo "ERROR: Environment variable 'REDIS_PORT' must be set"
+		fdc_error "Environment variable 'REDIS_PORT' must be set"
 		false
 	fi
 	if [ -z "$REDIS_PASSWORD" ]; then
-		echo "ERROR: Environment variable 'REDIS_PASSWORD' must be set"
+		fdc_error "Environment variable 'REDIS_PASSWORD' must be set"
 		false
 	fi
 
 	if [ -z "$SECRET_KEY_BASE" ]; then
-		echo "ERROR: Environment variable 'SECRET_KEY_BASE' must be set"
+		fdc_error "Environment variable 'SECRET_KEY_BASE' must be set"
 		false
 	fi
 	if [ -z "$OTP_SECRET" ]; then
-		echo "ERROR: Environment variable 'OTP_SECRET' must be set"
+		fdc_error "Environment variable 'OTP_SECRET' must be set"
 		false
 	fi
 
 	if [ -z "$VAPID_PRIVATE_KEY" ]; then
-		echo "ERROR: Environment variable 'VAPID_PRIVATE_KEY' must be set"
-		echo "       This can be specified using:"
+		fdc_error "Environment variable 'VAPID_PRIVATE_KEY' must be set"
+		echo "	   This can be specified using:"
 		cat <<EOF
 	VAPID_PRIVATE_KEY_RAW=\$(openssl ecparam -name prime256v1 -genkey -noout -out /dev/stdout)
 	VAPID_PUBLIC_KEY_RAW=\$(echo "\$VAPID_PRIVATE_KEY_RAW" | openssl ec -in /dev/stdin -pubout -out /dev/stdout)
@@ -132,8 +133,8 @@ EOF
 		false
 	fi
 	if [ -z "$VAPID_PUBLIC_KEY" ]; then
-		echo "ERROR: Environment variable 'VAPID_PUBLIC_KEY' must be set"
-		echo "       This can be specified using:"
+		fdc_error "Environment variable 'VAPID_PUBLIC_KEY' must be set"
+		echo "	   This can be specified using:"
 		cat <<EOF
 	VAPID_PRIVATE_KEY_RAW=\$(openssl ecparam -name prime256v1 -genkey -noout -out /dev/stdout)
 	VAPID_PUBLIC_KEY_RAW=\$(echo "\$VAPID_PRIVATE_KEY_RAW" | openssl ec -in /dev/stdin -pubout -out /dev/stdout)
@@ -162,7 +163,7 @@ set +a
 if [ "$MASTODON_MODE" = "web" ]; then
 
 
-	if [ -n "$REDIS_HOST" -o -n "$REDIS_URL" ]; then
+	if [ -n "$REDIS_HOST" ] && [ -n "$REDIS_URL" ]; then
 		# Check Redis is up
 		REDIS_CHECK=(redis-cli)
 		if [ -n "$REDIS_URL" ]; then
@@ -186,7 +187,7 @@ if [ "$MASTODON_MODE" = "web" ]; then
 			if "${REDIS_CHECK[@]}" | grep -q PONG; then
 				break
 			fi
-			echo "INFO: Mastodon waiting for Redis to start up..."
+			fdc_info "Mastodon waiting for Redis to start up..."
 			sleep 2
 		done
 	fi
@@ -212,7 +213,7 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		if "${POSTGRES_CHECK[@]}"; then
 			break
 		fi
-		echo "INFO: Waiting for PostgreSQL..."
+		fdc_info "Waiting for PostgreSQL..."
 		sleep 2
 	done
 
@@ -220,10 +221,10 @@ if [ "$MASTODON_MODE" = "web" ]; then
 	# Check if we need to initialize the database
 	if [ ! -f /opt/mastodon/private/VERSION ]; then
 		# Initialize database
-		echo "NOTICE: Initializing Mastodon database..."
+		fdc_notice "Initializing Mastodon database..."
 		mastodon-rails db:schema:load
 		mastodon-rails db:seed
-		echo "NOTICE: Mastodon database initialization complete"
+		fdc_notice "Mastodon database initialization complete"
 
 		# Copy mastodon version into our private state storage
 		cp /opt/mastodon/VERSION /opt/mastodon/private/VERSION
@@ -235,9 +236,9 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		. /opt/mastodon/VERSION
 		# If it doesn't match, this is an upgrade
 		if [ "$MASTODON_VER_CUR" != "$MASTODON_VER" ]; then
-			echo "NOTICE: Mastodon upgrade needed from $MASTODON_VER_CUR to $MASTODON_VER"
+			fdc_notice "Mastodon upgrade needed from $MASTODON_VER_CUR to $MASTODON_VER"
 			SKIP_POST_DEPLOYMENT_MIGRATIONS=true mastodon-rails db:migrate
-			echo "NOTICE: Mastodon upgrade (pre-deployment) complete"
+			fdc_notice "Mastodon upgrade (pre-deployment) complete"
 			echo "MASTODON_VER=$MASTODON_VER" > /opt/mastodon/private/VERSION
 		fi
 	fi
@@ -245,7 +246,7 @@ if [ "$MASTODON_MODE" = "web" ]; then
 else
 
 	while ! nc -z "$MASTODON_HOST" 3000; do
-		echo "INFO: Waiting for Mastodon on host '$MASTODON_HOST' to start..."
+		fdc_info "Waiting for Mastodon on host '$MASTODON_HOST' to start..."
 		sleep 2
 	done
 

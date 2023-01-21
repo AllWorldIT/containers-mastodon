@@ -21,8 +21,8 @@
 
 
 if [ "$MASTODON_MODE" != "web" ]; then
-    echo "ERROR: This command should be run on the 'web' instance"
-    exit 1
+	echo "ERROR: This command should be run on the 'web' instance"
+	exit 1
 fi
 
 cd /opt/mastodon

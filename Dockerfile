@@ -33,7 +33,7 @@ COPY patches build/patches
 
 
 # Install libs we need
-RUN set -ex; \
+RUN set -eux; \
 	true "Installing build dependencies"; \
 # from https://git.alpinelinux.org/aports/tree/main/ruby/APKBUILD
 	apk add --no-cache \
@@ -46,7 +46,7 @@ RUN set -ex; \
 
 
 # Download packages
-RUN set -ex; \
+RUN set -eux; \
 	mkdir -p build; \
 	cd build; \
 	wget "https://cache.ruby-lang.org/pub/ruby/${RUBY_VER%.*}/ruby-$RUBY_VER.tar.gz"; \
@@ -54,7 +54,7 @@ RUN set -ex; \
 
 
 # Build and install Ruby
-RUN set -ex; \
+RUN set -eux; \
 	cd build; \
 	cd ruby-${RUBY_VER}; \
 # Patching
@@ -87,7 +87,7 @@ RUN set -ex; \
 		--mandir=/usr/share/man \
 		--infodir=/usr/share/info \
 		--with-sitedir=/usr/local/lib/site_ruby \
-		--with-search-path="/usr/lib/site_ruby/\$(ruby_ver)/$_arch-linux" \
+		--with-search-path="/usr/lib/site_ruby/\$(ruby_ver)/x86_64-linux" \
 		--enable-pthread \
 		--disable-rpath \
 		--enable-shared \
@@ -107,7 +107,7 @@ RUN set -ex; \
 		"$pkgdir"/usr/lib/pkgconfig
 
 
-RUN set -ex; \
+RUN set -eux; \
 	cd build/ruby-root; \
 	pkgdir="/build/ruby-root"; \
 	scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" .  | awk '{print $3}' | xargs \
@@ -134,7 +134,7 @@ COPY patches build/patches
 
 
 # Install libs we need
-RUN set -ex; \
+RUN set -eux; \
 	true "Installing build dependencies"; \
 # from https://git.alpinelinux.org/aports/tree/main/nodejs/APKBUILD
 	apk add --no-cache \
@@ -144,7 +144,7 @@ RUN set -ex; \
 
 
 # Download packages
-RUN set -ex; \
+RUN set -eux; \
 	mkdir -p build; \
 	cd build; \
 	wget "https://nodejs.org/dist/v$NODEJS_VER/node-v$NODEJS_VER.tar.gz"; \
@@ -152,7 +152,7 @@ RUN set -ex; \
 
 
 # Build and install Nodejs
-RUN set -ex; \
+RUN set -eux; \
 	cd build; \
 	cd node-v${NODEJS_VER}; \
 # Remove bundled dependencies that we're not using.
@@ -212,7 +212,7 @@ RUN set -ex; \
 		"$pkgdir"/usr/lib/node_modules/npm/man
 
 
-RUN set -ex; \
+RUN set -eux; \
 	cd build/nodejs-root; \
 	pkgdir="/build/nodejs-root"; \
 	scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" .  | awk '{print $3}' | xargs \
@@ -247,7 +247,7 @@ COPY --from=nodejs-builder /build/nodejs-root /
 # Copy build patches
 COPY patches build/patches
 
-RUN set -ex; \
+RUN set -eux; \
 	true "Install requirements"; \
 # Base requirements
 	apk add --no-cache ca-certificates openssl1.1-compat c-ares; \
@@ -291,7 +291,7 @@ RUN set -ex; \
 
 FROM registry.conarx.tech/containers/alpine/3.17 as tools
 
-RUN set -ex; \
+RUN set -eux; \
 	true "Install tools"; \
 	apk add --no-cache \
 		redis \
@@ -308,7 +308,7 @@ LABEL org.opencontainers.image.version   = "3.17"
 LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:3.17"
 
 
-RUN set -ex; \
+RUN set -eux; \
 	true "Setup user and group"; \
 	addgroup -S mastodon 2>/dev/null; \
 	adduser -S -D -h /opt/mastodon -s /sbin/nologin -G mastodon -g mastodon mastodon 2>/dev/null
@@ -328,7 +328,7 @@ COPY --from=tools /usr/bin/pg_isready /usr/local/bin/pg_isready
 # Add more PATHs to the PATH
 ENV PATH="${PATH}:/opt/mastodon/bin"
 
-RUN set -ex; \
+RUN set -eux; \
 	true "Install requirements"; \
 # Base requirements
 	apk add --no-cache ca-certificates curl openssl1.1-compat c-ares sudo; \
@@ -358,7 +358,7 @@ COPY usr/local/sbin/mastodon-rails /usr/local/sbin/mastodon-rails
 COPY usr/local/share/flexible-docker-containers/init.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/init.d
 COPY usr/local/share/flexible-docker-containers/tests.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/tests.d
 COPY usr/local/share/flexible-docker-containers/healthcheck.d/42-mastodon.sh /usr/local/share/flexible-docker-containers/healthcheck.d
-RUN set -ex; \
+RUN set -eux; \
 	true "Flexible Docker Containers"; \
 	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
 	true "Permissions"; \

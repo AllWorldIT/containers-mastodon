@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Copyright (c) 2022-2023, AllWorldIT.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,27 +20,8 @@
 # IN THE SOFTWARE.
 
 
-fdc_test_start mastodon "Using health check to test Mastodon is up"
-i=120
-while [ "$i" -gt 0 ]; do
-	i=$((i-1))
+set -e
 
-	fdc_test_progress mastodon "Waiting for Mastodon health check to pass... ${i}s"
+MASTODON_VERSION=$(grep "ARG MASTODON_VER" Dockerfile | sed -e 's/ARG MASTODON_VER=//')
 
-	if source /usr/local/share/flexible-docker-containers/healthcheck.d/42-mastodon.sh; then
-		fdc_test_pass mastodon "Mastodon health check passed on for mode '$MASTODON_MODE'"
-		break
-	fi
-
-	sleep 1
-done
-
-if [ "$i" = 0 ]; then
-	fdc_test_fail mastodon "Mastodon health check failed!"
-	false
-fi
-
-touch /PASSED
-
-# We'll wait 60s more, as we're shut down by the run-mastodon-test script
-sleep 60
+export CONTAINER_VERSION_EXTRA="$MASTODON_VERSION"
