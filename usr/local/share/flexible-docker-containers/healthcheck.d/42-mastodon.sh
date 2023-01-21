@@ -20,6 +20,7 @@
 # IN THE SOFTWARE.
 
 
+# shellcheck disable=SC2164
 cd /opt/mastodon
 
 # Load our MASTODON_MODE env
@@ -29,21 +30,22 @@ cd /opt/mastodon
 if [ "$MASTODON_MODE" = "web" ]; then
 	# Check we get a positive response back when using IPv4
 	if ! curl -H "User-Agent: Health Check" --silent --fail -ipv4 http://localhost:3000/health; then
-		echo -e "ERROR: Mastodon health check failed for Mastodon 'web' using IPv4"
+		fdc_error "Mastodon health check failed for Mastodon 'web' using IPv4"
 		false
 	fi
 
 elif [ "$MASTODON_MODE" = "streaming" ]; then
 	# Check we get a positive response back when using IPv4
 	if ! curl -H "User-Agent: Health Check" --silent --fail -ipv4 http://localhost:4000/api/v1/streaming/health; then
-		echo -e "ERROR: Mastodon health check failed for Mastodon 'streaming' using IPv4"
+		fdc_error "Mastodon health check failed for Mastodon 'streaming' using IPv4"
 		false
 	fi
 
 elif [ "$MASTODON_MODE" = "sidekiq" ]; then
 	# Check siekiq is running
+	# shellcheck disable=SC2009
 	if ! ps aux | grep -q 'sidekiq 6'; then
-		echo -e "ERROR: Mastodon health check failed for Mastodon 'streaming' using IPv4"
+		fdc_error "Mastodon health check failed for Mastodon 'streaming' using IPv4"
 		false
 	fi
 fi
@@ -51,7 +53,7 @@ fi
 
 # Return if we don't have IPv6 support
 if [ -z "$(ip -6 route show default)" ]; then
-    return
+	return
 fi
 
 
@@ -59,14 +61,14 @@ fi
 if [ "$MASTODON_MODE" = "web" ]; then
 	# Check we get a positive response back when using IPv4
 	if ! curl -H "User-Agent: Health Check" --silent --fail -ipv6 http://localhost:3000/health; then
-		echo -e "ERROR: Mastodon health check failed for Mastodon 'web' using IPv6"
+		fdc_error "Mastodon health check failed for Mastodon 'web' using IPv6"
 		false
 	fi
 
 elif [ "$MASTODON_MODE" = "streaming" ]; then
 	# Check we get a positive response back when using IPv4
 	if ! curl -H "User-Agent: Health Check" --silent --fail -ipv6 http://localhost:4000/api/v1/streaming/health; then
-		echo -e "ERROR: Mastodon health check failed for Mastodon 'streaming' using IPv6"
+		fdc_error" Mastodon health check failed for Mastodon 'streaming' using IPv6"
 		false
 	fi
 fi
