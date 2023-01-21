@@ -87,7 +87,7 @@ RUN set -eux; \
 		--mandir=/usr/share/man \
 		--infodir=/usr/share/info \
 		--with-sitedir=/usr/local/lib/site_ruby \
-		--with-search-path="/usr/lib/site_ruby/\$(ruby_ver)/$_arch-linux" \
+		--with-search-path="/usr/lib/site_ruby/\$(ruby_ver)/x86_64-linux" \
 		--enable-pthread \
 		--disable-rpath \
 		--enable-shared \
