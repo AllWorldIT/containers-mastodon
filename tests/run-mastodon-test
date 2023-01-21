@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-function check_tests() {
+check_tests() {
     i=120
     while [ "$i" -gt 0 ]; do
         i=$((i-1))
@@ -96,7 +96,7 @@ echo "NOTICE: ALL TESTS PASSED FOR ROUND 2!"
 
 
 # Now we're going to trigger an upgrade
-> data/mastodon.private/VERSION
+true > data/mastodon.private/VERSION
 
 
 echo "NOTICE: Starting nodes for round 3"
