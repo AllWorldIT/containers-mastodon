@@ -52,7 +52,7 @@ We also provide consulting services to create and maintain Docker images to meet
 # Environment Variables
 
 Additional environment variables are available from...
-* [Conarx Containers Alpine image](https://gitlab.conarx.tech/containers/alpine).
+* [Conarx Containers Alpine image](https://gitlab.conarx.tech/containers/alpine)
 
 
 ## MASTODON_MODE
