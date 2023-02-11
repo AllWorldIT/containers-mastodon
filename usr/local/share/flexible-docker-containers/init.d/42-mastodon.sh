@@ -163,7 +163,7 @@ set +a
 if [ "$MASTODON_MODE" = "web" ]; then
 
 
-	if [ -n "$REDIS_HOST" ] && [ -n "$REDIS_URL" ]; then
+	if [ -n "$REDIS_HOST" ] || [ -n "$REDIS_URL" ]; then
 		# Check Redis is up
 		REDIS_CHECK=(redis-cli)
 		if [ -n "$REDIS_URL" ]; then
