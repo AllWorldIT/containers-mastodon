@@ -27,6 +27,7 @@ while [ "$i" -gt 0 ]; do
 
 	fdc_test_progress mastodon "Waiting for Mastodon health check to pass... ${i}s"
 
+	# shellcheck disable=SC1091
 	if source /usr/local/share/flexible-docker-containers/healthcheck.d/42-mastodon.sh; then
 		fdc_test_pass mastodon "Mastodon health check passed on for mode '$MASTODON_MODE'"
 		break
