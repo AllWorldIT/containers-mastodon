@@ -64,6 +64,7 @@ echo "MASTODON_MODE=$MASTODON_MODE" > /opt/mastodon/.mode.env
 
 # Check settings we need are set
 (
+	# shellcheck disable=SC1091
 	. /mastodon/mastodon.env
 
 	if [ -z "$MASTODON_HOST" ]; then
@@ -154,6 +155,7 @@ chown mastodon:mastodon /opt/mastodon/private /opt/mastodon/public /opt/mastodon
 
 # Load configuration
 set -a
+# shellcheck disable=SC1091
 . /opt/mastodon/mastodon.env
 set +a
 
@@ -231,8 +233,10 @@ if [ "$MASTODON_MODE" = "web" ]; then
 
 	# If not a new installation, check if we need an upgrade
 	else
+		# shellcheck disable=SC1091
 		. /opt/mastodon/private/VERSION
 		MASTODON_VER_CUR="$MASTODON_VER"
+		# shellcheck disable=SC1091
 		. /opt/mastodon/VERSION
 		# If it doesn't match, this is an upgrade
 		if [ "$MASTODON_VER_CUR" != "$MASTODON_VER" ]; then

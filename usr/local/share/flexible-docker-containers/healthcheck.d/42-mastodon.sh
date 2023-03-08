@@ -24,6 +24,7 @@
 cd /opt/mastodon
 
 # Load our MASTODON_MODE env
+# shellcheck disable=SC1091
 . .mode.env
 
 # Decide which one of our health checks we'll be running

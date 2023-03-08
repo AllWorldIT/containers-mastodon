@@ -303,9 +303,11 @@ FROM registry.conarx.tech/containers/alpine/edge
 
 
 ARG VERSION_INFO=
-LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   = "edge"
-LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:edge"
+
+LABEL org.opencontainers.image.authors   "Nigel Kukard <nkukard@conarx.tech>"
+LABEL org.opencontainers.image.version   "edge"
+LABEL org.opencontainers.image.base.name "docker.io/library/alpine:edge"
+
 
 
 RUN set -eux; \
