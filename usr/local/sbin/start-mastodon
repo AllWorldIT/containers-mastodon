@@ -24,10 +24,12 @@ cd /opt/mastodon
 
 # Load Mastodon configuration
 set -a
+# shellcheck disable=SC1091
 . mastodon.env
 set +a
 
 # Load our MASTODON_MODE env
+# shellcheck disable=SC1091
 . .mode.env
 
 if [ "$MASTODON_MODE" = "web" ]; then
