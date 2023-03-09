@@ -61,17 +61,11 @@ RUN set -eux; \
 #	patch -p1 < ../patches/ruby-dont-install-bundled-gems.patch; \
 	patch -p1 < ../patches/ruby-fix-get_main_stack.patch; \
 	patch -p1 <	../patches/ruby-test_insns-lower-recursion-depth.patch; \
-# Compiler flags
-	export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-clash-protection -fcf-protection -flto=auto"; \
-	export CXXFLAGS="-Wp,-D_GLIBCXX_ASSERTIONS"; \
-	export CPPFLAGS="$CXXFLAGS"; \
-	export LDFLAGS="-Wl,-O2,--sort-common,--as-needed,-z,relro,-z,now -flto=auto"; \
-	\
 # -fomit-frame-pointer makes ruby segfault, see gentoo bug #150413
 # In many places aliasing rules are broken; play it safe
 # as it's risky with newer compilers to leave it as it is.
-	export CFLAGS="$CFLAGS -fno-omit-frame-pointer -fno-strict-aliasing"; \
-	export CPPFLAGS="$CPPFLAGS -fno-omit-frame-pointer -fno-strict-aliasing"; \
+	export CFLAGS="-fno-omit-frame-pointer -fno-strict-aliasing"; \
+	export CPPFLAGS="-fno-omit-frame-pointer -fno-strict-aliasing"; \
 	\
 # Needed for coroutine stuff
 	export LIBS="-lucontext"; \
@@ -166,14 +160,9 @@ RUN set -eux; \
 	patch -p1 < ../patches/nodejs-fix-build-with-system-c-ares.patch; \
 	patch -p1 < ../patches/nodejs-disable-running-gyp-on-shared-deps.patch; \
 # Compiler flags
-	export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fexceptions -Wp,-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-clash-protection -fcf-protection -flto=auto"; \
-	export CXXFLAGS="-Wp,-D_GLIBCXX_ASSERTIONS"; \
-	export CPPFLAGS="$CXXFLAGS"; \
-	export LDFLAGS="-Wl,-O2,--sort-common,--as-needed,-z,relro,-z,now -flto=auto"; \
-	\
-	export CFLAGS="$CFLAGS -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
-	export CXXFLAGS="$CXXFLAGS -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
-	export CPPFLAGS="$CPPFLAGS -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
+	export CFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
+	export CXXFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
+	export CPPFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
 	\
 # NOTE: We use bundled libuv because they don't care much about backward
 # compatibility and it has happened several times in past that we
