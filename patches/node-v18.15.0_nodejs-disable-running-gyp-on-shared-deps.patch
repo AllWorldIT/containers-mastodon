@@ -1,0 +1,14 @@
+diff --color -ru node-v18.15.0_vanilla/Makefile node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps/Makefile
+--- node-v18.15.0_vanilla/Makefile	2023-03-05 06:42:50.000000000 +0000
++++ node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps/Makefile	2023-03-17 04:27:36.053877725 +0000
+@@ -169,7 +169,7 @@
+ 	$(warning '$@' target is a noop)
+ 
+ out/Makefile: config.gypi common.gypi node.gyp \
+-	deps/uv/uv.gyp deps/llhttp/llhttp.gyp deps/zlib/zlib.gyp \
++	deps/uv/uv.gyp deps/llhttp/llhttp.gyp \
+ 	deps/simdutf/simdutf.gyp \
+ 	tools/v8_gypfiles/toolchain.gypi tools/v8_gypfiles/features.gypi \
+ 	tools/v8_gypfiles/inspector.gypi tools/v8_gypfiles/v8.gyp
+Only in node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps: Makefile.orig
+Only in node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps: Makefile.rej
