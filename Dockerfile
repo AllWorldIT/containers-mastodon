@@ -26,7 +26,7 @@
 
 FROM registry.conarx.tech/containers/alpine/edge as ruby-builder
 
-ARG RUBY_VER=3.0.4
+ARG RUBY_VER=3.0.5
 
 # Copy build patches
 COPY patches build/patches
@@ -121,7 +121,7 @@ RUN set -eux; \
 
 FROM registry.conarx.tech/containers/alpine/edge as nodejs-builder
 
-ARG NODEJS_VER=16.18.1
+ARG NODEJS_VER=18.15.0
 
 # Copy build patches
 COPY patches build/patches
@@ -150,15 +150,23 @@ RUN set -eux; \
 	cd build; \
 	cd node-v${NODEJS_VER}; \
 # Remove bundled dependencies that we're not using.
+# ref: https://git.alpinelinux.org/aports/tree/main/nodejs/APKBUILD
+	# openssl.cnf is required for build.
+	mv deps/openssl/nodejs-openssl.cnf .; \
+	\
+	# Remove bundled dependencies that we're not using.
 	rm -rf deps/brotli \
 		deps/cares \
-		deps/openssl \
+		deps/corepack \
+		deps/openssl/* \
 		deps/v8/third_party/jinja2 \
 		deps/zlib \
 		tools/inspector_protocol/jinja2; \
+	\
+	mv nodejs-openssl.cnf deps/openssl/; \
 # Patching
 	patch -p1 < ../patches/nodejs-fix-build-with-system-c-ares.patch; \
-	patch -p1 < ../patches/nodejs-disable-running-gyp-on-shared-deps.patch; \
+	patch -p1 < ../patches/node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps.patch; \
 # Compiler flags
 	export CFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
 	export CXXFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
@@ -226,7 +234,7 @@ FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.1.0
+ARG MASTODON_VER=4.1.1
 
 
 # Copy in built binaries
