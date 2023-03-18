@@ -121,6 +121,10 @@ services:
 
 
 networks:
-  external:
   internal:
+    driver: bridge
+    enable_ipv6: true
     internal: true
+  external:
+    driver: bridge
+    enable_ipv6: true
