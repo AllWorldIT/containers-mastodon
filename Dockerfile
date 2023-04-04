@@ -26,7 +26,7 @@
 
 FROM registry.conarx.tech/containers/alpine/edge as ruby-builder
 
-ARG RUBY_VER=3.0.5
+ARG RUBY_VER=3.0.6
 
 # Copy build patches
 COPY patches build/patches
@@ -234,7 +234,7 @@ FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.1.1
+ARG MASTODON_VER=4.1.2
 
 
 # Copy in built binaries
