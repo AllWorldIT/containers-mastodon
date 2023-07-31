@@ -40,7 +40,7 @@ RUN set -eux; \
 		build-base \
 		ca-certificates \
 		gmp-dev libucontext-dev \
-		zlib-dev openssl1.1-compat-dev gdbm-dev readline-dev libffi-dev coreutils yaml-dev linux-headers autoconf \
+		zlib-dev openssl-dev gdbm-dev readline-dev libffi-dev coreutils yaml-dev linux-headers autoconf \
 		\
 		jemalloc-dev
 
@@ -134,7 +134,7 @@ RUN set -eux; \
 	apk add --no-cache \
 		build-base \
 		ca-certificates \
-		brotli-dev c-ares-dev icu-dev linux-headers nghttp2-dev openssl1.1-compat-dev python3 py3-jinja2 samurai zlib-dev
+		brotli-dev c-ares-dev icu-dev linux-headers nghttp2-dev openssl-dev python3 py3-jinja2 samurai zlib-dev
 
 
 # Download packages
@@ -234,7 +234,7 @@ FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.1.2
+ARG MASTODON_VER=4.1.6
 
 
 # Copy in built binaries
@@ -247,7 +247,7 @@ COPY patches build/patches
 RUN set -eux; \
 	true "Install requirements"; \
 # Base requirements
-	apk add --no-cache ca-certificates openssl1.1-compat c-ares; \
+	apk add --no-cache ca-certificates openssl c-ares; \
 # Ruby
 	apk add --no-cache libucontext; \
 # NodeJS
@@ -330,7 +330,7 @@ ENV PATH="${PATH}:/opt/mastodon/bin"
 RUN set -eux; \
 	true "Install requirements"; \
 # Base requirements
-	apk add --no-cache ca-certificates curl openssl1.1-compat c-ares sudo; \
+	apk add --no-cache ca-certificates curl openssl c-ares sudo; \
 # Ruby
 	apk add --no-cache libucontext; \
 # NodeJS
