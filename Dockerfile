@@ -26,7 +26,7 @@
 
 FROM registry.conarx.tech/containers/alpine/3.18 as ruby-builder
 
-ARG RUBY_VER=3.0.6
+ARG RUBY_VER=3.2.2
 
 # Copy build patches
 COPY patches build/patches
@@ -85,8 +85,6 @@ RUN set -eux; \
 		--enable-pthread \
 		--disable-rpath \
 		--enable-shared \
-		--enable-yjit \
-		--with-jemalloc \
 		--disable-install-doc; \
 # Build
 	make -j$(nproc) -l 8 VERBOSE=1; \
@@ -121,7 +119,7 @@ RUN set -eux; \
 
 FROM registry.conarx.tech/containers/alpine/3.18 as nodejs-builder
 
-ARG NODEJS_VER=18.15.0
+ARG NODEJS_VER=18.18.0
 
 # Copy build patches
 COPY patches build/patches
@@ -166,7 +164,7 @@ RUN set -eux; \
 	mv nodejs-openssl.cnf deps/openssl/; \
 # Patching
 	patch -p1 < ../patches/nodejs-fix-build-with-system-c-ares.patch; \
-	patch -p1 < ../patches/node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps.patch; \
+#	patch -p1 < ../patches/node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps.patch; \
 # Compiler flags
 	export CFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
 	export CXXFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
@@ -234,7 +232,7 @@ FROM registry.conarx.tech/containers/alpine/3.18 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.1.6
+ARG MASTODON_VER=4.2.0
 
 
 # Copy in built binaries
@@ -332,7 +330,7 @@ RUN set -eux; \
 # Base requirements
 	apk add --no-cache ca-certificates curl openssl1.1-compat c-ares sudo; \
 # Ruby
-	apk add --no-cache libucontext; \
+	apk add --no-cache gmp libucontext; \
 # NodeJS
 	apk add --no-cache nghttp2-libs; \
 # Mastodon
