@@ -119,7 +119,7 @@ RUN set -eux; \
 
 FROM registry.conarx.tech/containers/alpine/3.18 as nodejs-builder
 
-ARG NODEJS_VER=18.18.0
+ARG NODEJS_VER=20.10.0
 
 # Copy build patches
 COPY patches build/patches
@@ -232,7 +232,7 @@ FROM registry.conarx.tech/containers/alpine/3.18 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.2.1
+ARG MASTODON_VER=4.2.2
 
 
 # Copy in built binaries
