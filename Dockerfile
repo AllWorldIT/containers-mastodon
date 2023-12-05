@@ -232,7 +232,7 @@ FROM registry.conarx.tech/containers/alpine/3.18 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.2.2
+ARG MASTODON_VER=4.2.3
 
 
 # Copy in built binaries
