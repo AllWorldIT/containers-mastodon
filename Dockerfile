@@ -26,7 +26,7 @@
 
 FROM registry.conarx.tech/containers/alpine/3.20 as ruby-builder
 
-ARG RUBY_VER=3.2.2
+ARG RUBY_VER=3.2.4
 
 # Copy build patches
 COPY patches build/patches
@@ -119,7 +119,7 @@ RUN set -eux; \
 
 FROM registry.conarx.tech/containers/alpine/3.20 as nodejs-builder
 
-ARG NODEJS_VER=20.10.0
+ARG NODEJS_VER=22.2.0
 
 # Copy build patches
 COPY patches build/patches
@@ -232,7 +232,7 @@ FROM registry.conarx.tech/containers/alpine/3.20 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.2.8
+ARG MASTODON_VER=4.2.9
 
 
 # Copy in built binaries
