@@ -247,6 +247,10 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		fi
 	fi
 
+	# Output keys if we don't have any
+	if [ -z "$ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY" ]; then
+		mastodon-rails db:encryption:init
+	fi
 else
 
 	while ! nc -z "$MASTODON_HOST" 3000; do
