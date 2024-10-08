@@ -147,24 +147,8 @@ RUN set -eux; \
 RUN set -eux; \
 	cd build; \
 	cd node-v${NODEJS_VER}; \
-# Remove bundled dependencies that we're not using.
-# ref: https://git.alpinelinux.org/aports/tree/main/nodejs/APKBUILD
-	# openssl.cnf is required for build.
-	mv deps/openssl/nodejs-openssl.cnf .; \
-	\
-	# Remove bundled dependencies that we're not using.
-	rm -rf deps/brotli \
-		deps/cares \
-		deps/corepack \
-		deps/openssl/* \
-		deps/v8/third_party/jinja2 \
-		deps/zlib \
-		tools/inspector_protocol/jinja2; \
-	\
-	mv nodejs-openssl.cnf deps/openssl/; \
 # Patching
 	patch -p1 < ../patches/nodejs-fix-build-with-system-c-ares.patch; \
-#	patch -p1 < ../patches/node-v18.15.0_nodejs-disable-running-gyp-on-shared-deps.patch; \
 # Compiler flags
 	export CFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
 	export CXXFLAGS="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
@@ -232,7 +216,7 @@ FROM registry.conarx.tech/containers/alpine/3.20 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.2.13
+ARG MASTODON_VER=4.3.0
 
 
 # Copy in built binaries
@@ -253,7 +237,7 @@ RUN set -eux; \
 # Mastodon
 	apk add --no-cache coreutils wget procps libpq imagemagick ffmpeg jemalloc icu-libs libidn yaml file tzdata readline; \
 # Mastodon build reqs
-	apk add --no-cache build-base git jemalloc-dev libucontext-dev libpq-dev icu-dev zlib-dev libidn-dev; \
+	apk add --no-cache build-base git jemalloc-dev libucontext-dev libpq-dev icu-dev zlib-dev libidn-dev linux-headers yaml-dev vips-dev; \
 	npm install --global yarn; \
 	true "Versioning..."; \
 	node --version; \
@@ -265,17 +249,27 @@ RUN set -eux; \
 	cd mastodon-${MASTODON_VER}; \
 	true "Patching Mastodon..."; \
 	patch -p1 < ../patches/mastodon-4.0.2_reserved-usernames.patch; \
+	true "Enable corepack..."; \
+	corepack enable; \
+	corepack prepare --activate; \
 	true "Build Mastodon..."; \
 	bundle config set --local deployment 'true'; \
 	bundle config set --local without 'development test'; \
 	bundle config set silence_root_warning true; \
 	bundle install -j$(nproc); \
-	yarn install --pure-lockfile --network-timeout 600000; \
+	true "Install Node modules..."; \
+	yarn workspaces focus --production @mastodon/mastodon; \
 	true "Writing out version..."; \
 	echo "MASTODON_VER=$MASTODON_VER" > VERSION; \
 	true "Precompiling assets..."; \
-	RAILS_ENV=production OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder \
+	RAILS_ENV=production \
+		ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=precompile_placeholder \
+		ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=precompile_placeholder \
+		ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=precompile_placeholder \
+		OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder \
 		bin/rails assets:precompile; \
+	true "Install Node modules for Streaming server..."; \
+	yarn workspaces focus --production @mastodon/streaming; \
 	true "Cleaning up..."; \
 	yarn cache clean; \
 	true "Moving to 'mastodon'..."; \
@@ -334,7 +328,7 @@ RUN set -eux; \
 # NodeJS
 	apk add --no-cache nghttp2-libs; \
 # Mastodon
-	apk add --no-cache coreutils wget procps libpq imagemagick ffmpeg jemalloc icu-libs libidn yaml file tzdata readline; \
+	apk add --no-cache coreutils wget procps libpq imagemagick ffmpeg jemalloc icu-libs libidn yaml file tzdata readline vips; \
 	mkdir -p /opt/mastodon/public/system; \
 	mkdir -p /opt/mastodon/private; \
 # Link mastodon to / that everyone else uses
