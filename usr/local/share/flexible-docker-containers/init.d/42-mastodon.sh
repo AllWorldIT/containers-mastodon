@@ -219,6 +219,10 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		sleep 2
 	done
 
+	# Output keys if we don't have any
+	if [ -z "$ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY" ]; then
+		mastodon-rails db:encryption:init
+	fi
 
 	# Check if we need to initialize the database
 	if [ ! -f /opt/mastodon/private/VERSION ]; then
@@ -247,10 +251,6 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		fi
 	fi
 
-	# Output keys if we don't have any
-	if [ -z "$ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY" ]; then
-		mastodon-rails db:encryption:init
-	fi
 else
 
 	while ! nc -z "$MASTODON_HOST" 3000; do
