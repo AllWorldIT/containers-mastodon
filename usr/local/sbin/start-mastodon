@@ -32,12 +32,16 @@ set +a
 # shellcheck disable=SC1091
 . .mode.env
 
+
 if [ "$MASTODON_MODE" = "web" ]; then
-	exec bundle exec rails server -p 3000 -b "$BIND"
+	_bundle=$(which bundle)
+	exec "$_bundle" exec rails server -p 3000 -b "$BIND"
 
 elif [ "$MASTODON_MODE" = "streaming" ]; then
-	exec node ./streaming/index.js
+	_node=$(which node)
+	exec "$_node" ./streaming/index.js
 
 elif [ "$MASTODON_MODE" = "sidekiq" ]; then
-	exec bundle exec sidekiq
+	_bundle=$(which bundle)
+	exec "$_bundle" exec sidekiq
 fi
