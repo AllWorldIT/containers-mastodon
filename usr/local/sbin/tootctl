@@ -35,4 +35,4 @@ set +a
 
 set -e
 
-sudo -E -u mastodon -- bin/tootctl "$@"
+sudo -E -preserve-env=PATH -u mastodon -- bin/tootctl "$@"
