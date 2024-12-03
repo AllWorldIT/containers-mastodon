@@ -31,10 +31,12 @@ if [ ! -f /etc/mastodon/mastodon.env ]; then
 	fdc_error "This can be specified using:  --volume /home/user/test/mastodon.env:/etc/mastodon/mastodon.env"
 	false
 fi
+
+
 # Setup environment variables
 cat <<EOF > /opt/mastodon/mastodon.env
 # Defaults
-PATH="$PATH:/opt/mastodon/bin"
+PATH="$PATH"
 RAILS_ENV="production"
 NODE_ENV="production"
 RAILS_SERVE_STATIC_FILES="true"
