@@ -35,4 +35,5 @@ set +a
 
 set -e
 
-sudo -E -u mastodon -- bundle exec rails "$@"
+_bundle=$(which bundle)
+exec sudo -E --preserve-env=PATH -u mastodon -- "$_bundle" exec rails "$@"
