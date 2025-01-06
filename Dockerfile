@@ -111,9 +111,9 @@ ARG VERSION_INFO=
 ARG RUBY_VER=3.3.6
 ARG NODEJS_VER=22.11.0
 
-LABEL org.opencontainers.image.authors   "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   "edge"
-LABEL org.opencontainers.image.base.name "docker.io/library/alpine:edge"
+LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
+LABEL org.opencontainers.image.version   = "edge"
+LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:edge"
 
 COPY --from=registry.conarx.tech/containers/ruby/edge:3.3.6 /opt/ruby-3.3.6 /opt/ruby-3.3.6
 COPY --from=registry.conarx.tech/containers/nodejs/edge:22.11.0 /opt/nodejs-22.11.0 /opt/nodejs-22.11.0
