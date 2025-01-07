@@ -19,15 +19,15 @@
 # IN THE SOFTWARE.
 
 
-FROM registry.conarx.tech/containers/alpine/3.20 as mastodon-builder
+FROM registry.conarx.tech/containers/alpine/3.21 as mastodon-builder
 
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
 ARG MASTODON_VER=4.3.2
 
-COPY --from=registry.conarx.tech/containers/nodejs/3.20:22.11.0 /opt/nodejs-22.11.0 /opt/nodejs-22.11.0
-COPY --from=registry.conarx.tech/containers/ruby/3.20:3.3.6 /opt/ruby-3.3.6 /opt/ruby-3.3.6
+COPY --from=registry.conarx.tech/containers/nodejs/3.21:22.12.0 /opt/nodejs-22.12.0 /opt/nodejs-22.12.0
+COPY --from=registry.conarx.tech/containers/ruby/3.21:3.3.6 /opt/ruby-3.3.6 /opt/ruby-3.3.6
 
 
 # Copy build patches
@@ -93,7 +93,7 @@ RUN set -eux; \
 
 
 
-FROM registry.conarx.tech/containers/alpine/3.20 as tools
+FROM registry.conarx.tech/containers/alpine/3.21 as tools
 
 RUN set -eux; \
 	true "Install tools"; \
@@ -103,20 +103,20 @@ RUN set -eux; \
 
 
 
-FROM registry.conarx.tech/containers/alpine/3.20
+FROM registry.conarx.tech/containers/alpine/3.21
 
 
 ARG VERSION_INFO=
 
 ARG RUBY_VER=3.3.6
-ARG NODEJS_VER=22.11.0
+ARG NODEJS_VER=22.12.0
 
 LABEL org.opencontainers.image.authors   "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   "3.20"
-LABEL org.opencontainers.image.base.name "docker.io/library/alpine:3.20"
+LABEL org.opencontainers.image.version   "3.21"
+LABEL org.opencontainers.image.base.name "docker.io/library/alpine:3.21"
 
-COPY --from=registry.conarx.tech/containers/ruby/3.20:3.3.6 /opt/ruby-3.3.6 /opt/ruby-3.3.6
-COPY --from=registry.conarx.tech/containers/nodejs/3.20:22.11.0 /opt/nodejs-22.11.0 /opt/nodejs-22.11.0
+COPY --from=registry.conarx.tech/containers/ruby/3.21:3.3.6 /opt/ruby-3.3.6 /opt/ruby-3.3.6
+COPY --from=registry.conarx.tech/containers/nodejs/3.21:22.12.0 /opt/nodejs-22.12.0 /opt/nodejs-22.12.0
 
 
 RUN set -eux; \
