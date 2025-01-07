@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2022-2023, AllWorldIT.
+# Copyright (c) 2022-2025, AllWorldIT.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -221,6 +221,10 @@ if [ "$MASTODON_MODE" = "web" ]; then
 		sleep 2
 	done
 
+	# Output keys if we don't have any
+	if [ -z "$ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY" ]; then
+		mastodon-rails db:encryption:init
+	fi
 
 	# Check if we need to initialize the database
 	if [ ! -f /opt/mastodon/private/VERSION ]; then
