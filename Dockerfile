@@ -142,6 +142,7 @@ RUN set -eux; \
 	apk add --no-cache ca-certificates curl openssl c-ares sudo; \
 # Ruby
 	apk add --no-cache gmp libucontext; \
+	ln -s /opt/ruby-${RUBY_VER}/bin/ruby /usr/local/bin/ruby; \
 # NodeJS
 	apk add --no-cache libuv nghttp2-libs; \
 # Mastodon

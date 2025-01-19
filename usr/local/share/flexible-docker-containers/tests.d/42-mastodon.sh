@@ -20,6 +20,16 @@
 # IN THE SOFTWARE.
 
 
+if [ "$MASTODON_MODE" = "web" ]; then
+	fdc_test_start mastodon "Test execution of tootctl"
+	if ! tootctl --help; then
+		fdc_test_fail mastodon "Failed to execute tootctl"
+		false
+	fi
+	fdc_test_pass mastodon "tootctl executed successfully"
+fi
+
+
 fdc_test_start mastodon "Using health check to test Mastodon is up"
 i=120
 while [ "$i" -gt 0 ]; do
