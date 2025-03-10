@@ -24,7 +24,7 @@ FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.3.4
+ARG MASTODON_VER=4.3.5
 
 COPY --from=registry.conarx.tech/containers/nodejs/edge:22.14.0 /opt/nodejs-22.14.0 /opt/nodejs-22.14.0
 COPY --from=registry.conarx.tech/containers/ruby/edge:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
