@@ -24,9 +24,9 @@ FROM registry.conarx.tech/containers/alpine/edge as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.3.7
+ARG MASTODON_VER=4.3.8
 
-COPY --from=registry.conarx.tech/containers/nodejs/edge:22.14.0 /opt/nodejs-22.14.0 /opt/nodejs-22.14.0
+COPY --from=registry.conarx.tech/containers/nodejs/edge:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
 COPY --from=registry.conarx.tech/containers/ruby/edge:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
 
 
@@ -109,14 +109,14 @@ FROM registry.conarx.tech/containers/alpine/edge
 ARG VERSION_INFO=
 
 ARG RUBY_VER=3.4.2
-ARG NODEJS_VER=22.14.0
+ARG NODEJS_VER=22.15.0
 
 LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
 LABEL org.opencontainers.image.version   = "edge"
 LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:edge"
 
 COPY --from=registry.conarx.tech/containers/ruby/edge:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
-COPY --from=registry.conarx.tech/containers/nodejs/edge:22.14.0 /opt/nodejs-22.14.0 /opt/nodejs-22.14.0
+COPY --from=registry.conarx.tech/containers/nodejs/edge:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
 
 
 RUN set -eux; \
