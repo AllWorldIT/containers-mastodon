@@ -26,8 +26,8 @@ ARG VERSION_INFO=
 
 ARG MASTODON_VER=4.3.8
 
-COPY --from=registry.conarx.tech/containers/nodejs/3.21:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
-COPY --from=registry.conarx.tech/containers/ruby/3.21:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
+COPY --from=registry.conarx.tech/containers/nodejs/edge:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
+COPY --from=registry.conarx.tech/containers/ruby/edge:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
 
 
 # Copy build patches
@@ -115,8 +115,8 @@ LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
 LABEL org.opencontainers.image.version   = "3.21"
 LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:3.21"
 
-COPY --from=registry.conarx.tech/containers/ruby/3.21:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
-COPY --from=registry.conarx.tech/containers/nodejs/3.21:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
+COPY --from=registry.conarx.tech/containers/ruby/edge:3.4.2 /opt/ruby-3.4.2 /opt/ruby-3.4.2
+COPY --from=registry.conarx.tech/containers/nodejs/edge:22.15.0 /opt/nodejs-22.15.0 /opt/nodejs-22.15.0
 
 
 RUN set -eux; \
