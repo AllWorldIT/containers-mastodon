@@ -24,7 +24,7 @@ FROM registry.conarx.tech/containers/alpine/3.22 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.3.9
+ARG MASTODON_VER=4.4.0
 
 COPY --from=registry.conarx.tech/containers/nodejs/3.22:22.16.0 /opt/nodejs-22.16.0 /opt/nodejs-22.16.0
 COPY --from=registry.conarx.tech/containers/ruby/3.22:3.4.4 /opt/ruby-3.4.4 /opt/ruby-3.4.4
@@ -63,7 +63,7 @@ RUN set -eux; \
 	tar -zxf v${MASTODON_VER}.tar.gz; \
 	cd mastodon-${MASTODON_VER}; \
 	true "Patching Mastodon..."; \
-	patch -p1 < ../patches/mastodon-4.0.2_reserved-usernames.patch; \
+	patch -p1 < ../patches/mastodon-4.4.0_reserved-usernames.patch; \
 	true "Enable corepack..."; \
 	corepack enable; \
 	corepack prepare --activate; \

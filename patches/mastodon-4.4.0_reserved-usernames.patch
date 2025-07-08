@@ -1,0 +1,19 @@
+diff '--color=auto' -ru mastodon-4.4.0_vanilla/config/settings.yml mastodon-4.4.0_settings/config/settings.yml
+--- mastodon-4.4.0_vanilla/config/settings.yml	2025-07-08 14:07:41.000000000 +0000
++++ mastodon-4.4.0_settings/config/settings.yml	2025-07-08 15:31:02.122269773 +0000
+@@ -42,6 +42,15 @@
+     - staff
+     - support
+     - webmaster
++
++    - bot
++    - contact
++    - dmca
++    - hostmaster
++    - noreply
++    - notifications
++    - notify
++    - postmaster
+   disallowed_hashtags: # space separated string or list of hashtags without the hash
+   bootstrap_timeline_accounts: ''
+   activity_api_enabled: true
