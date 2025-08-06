@@ -24,9 +24,9 @@ FROM registry.conarx.tech/containers/alpine/3.22 as mastodon-builder
 LABEL maintainer="Nigel Kukard <nkukard@lbsd.net>"
 ARG VERSION_INFO=
 
-ARG MASTODON_VER=4.4.2
+ARG MASTODON_VER=4.4.3
 
-COPY --from=registry.conarx.tech/containers/nodejs/3.22:22.17.1 /opt/nodejs-22.17.1 /opt/nodejs-22.17.1
+COPY --from=registry.conarx.tech/containers/nodejs/3.22:22.18.0 /opt/nodejs-22.18.0 /opt/nodejs-22.18.0
 COPY --from=registry.conarx.tech/containers/ruby/3.22:3.4.5 /opt/ruby-3.4.5 /opt/ruby-3.4.5
 
 
@@ -109,14 +109,14 @@ FROM registry.conarx.tech/containers/alpine/3.22
 ARG VERSION_INFO=
 
 ARG RUBY_VER=3.4.5
-ARG NODEJS_VER=22.17.1
+ARG NODEJS_VER=22.18.0
 
 LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
 LABEL org.opencontainers.image.version   = "3.22"
 LABEL org.opencontainers.image.base.name = "docker.io/library/alpine:3.22"
 
 COPY --from=registry.conarx.tech/containers/ruby/3.22:3.4.5 /opt/ruby-3.4.5 /opt/ruby-3.4.5
-COPY --from=registry.conarx.tech/containers/nodejs/3.22:22.17.1 /opt/nodejs-22.17.1 /opt/nodejs-22.17.1
+COPY --from=registry.conarx.tech/containers/nodejs/3.22:22.18.0 /opt/nodejs-22.18.0 /opt/nodejs-22.18.0
 
 
 RUN set -eux; \
